@@ -1,13 +1,17 @@
 # Screen cleaning
 Clear-Host
 
-# Get ANSI colors
-$colors = [enum]::GetValues([System.ConsoleColor])
+# Get ANSI colors 
+$FGcolors = [enum]::GetValues([System.ConsoleColor])
+$BGcolors = $FGcolors
 
 # Cycle to display a table of text and background combinations
-Foreach ($bgcolor in $colors) {
-    Foreach ($fgcolor in $colors) { Write-Host "$fgcolor|"  -ForegroundColor $fgcolor -BackgroundColor $bgcolor -NoNewLine }
-    Write-Host " on $bgcolor"
+Foreach ($FGcolor in $FGcolors) {
+    Foreach ($BGcolor in $BGcolors) {
+        Write-Host -NoNewline (" myTest ") -ForegroundColor $FGcolor -BackgroundColor $BGcolor
+        Write-Host -NoNewline " "
+    }
+    Write-Host ""
 }
 
 # Restoring standard colors
