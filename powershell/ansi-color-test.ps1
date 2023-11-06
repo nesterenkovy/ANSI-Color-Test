@@ -1,9 +1,8 @@
 # Screen cleaning
 Clear-Host
 
-# Array of ANSI colors
-$colors = @("Black", "DarkBlue", "DarkGreen", "DarkCyan", "DarkRed", "DarkMagenta", "DarkYellow", "Gray",
-    "DarkGray", "Blue", "Green", "Cyan", "Red", "Magenta", "Yellow", "White")
+# Get ANSI colors
+$colors = [enum]::GetValues([System.ConsoleColor])
 
 # Cycle to display a table of text and background combinations
 Foreach ($bgcolor in $colors) {
