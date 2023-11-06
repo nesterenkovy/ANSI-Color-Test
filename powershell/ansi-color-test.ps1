@@ -8,6 +8,7 @@ $cellText = "myTest"
 
 # Array of color names and PS-values
 $listColors = @(
+    @{ Name = "Default"; Color = "none" },
     @{ Name = "Black"; Color = "Black" },
     @{ Name = "Red"; Color = "DarkRed" },
     @{ Name = "Green"; Color = "DarkGreen" },
@@ -15,15 +16,15 @@ $listColors = @(
     @{ Name = "Blue"; Color = "DarkBlue" },
     @{ Name = "Purple"; Color = "DarkMagenta" },
     @{ Name = "Cyan"; Color = "DarkCyan" },
-    @{ Name = "Gray"; Color = "Gray" },
-    @{ Name = "D_Gray"; Color = "DarkGray" },
+    @{ Name = "White"; Color = "Gray" },
+    @{ Name = "L_Black"; Color = "DarkGray" },
     @{ Name = "L_Red"; Color = "Red" },
     @{ Name = "L_Green"; Color = "Green" },
     @{ Name = "L_Yellow"; Color = "Yellow" },
     @{ Name = "L_Blue"; Color = "Blue" },
     @{ Name = "L_Purple"; Color = "Magenta" },
     @{ Name = "L_Cyan"; Color = "Cyan" },
-    @{ Name = "White"; Color = "White" },
+    @{ Name = "L_White"; Color = "White" },
     @{ Name = "Default"; Color = "none" }
 )
 
