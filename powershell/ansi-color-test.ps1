@@ -1,3 +1,7 @@
+# Table fields separator
+$separator = " "
+$cellText = " myTest "
+
 # Screen cleaning
 Clear-Host
 
@@ -8,11 +12,8 @@ $BGcolors = $FGcolors
 # Cycle to display a table of text and background combinations
 Foreach ($FGcolor in $FGcolors) {
     Foreach ($BGcolor in $BGcolors) {
-        Write-Host -NoNewline (" myTest ") -ForegroundColor $FGcolor -BackgroundColor $BGcolor
-        Write-Host -NoNewline " "
+        Write-Host -NoNewline "$cellText" -ForegroundColor $FGcolor -BackgroundColor $BGcolor
+        Write-Host -NoNewline "$separator"
     }
     Write-Host ""
 }
-
-# Restoring standard colors
-Write-Host "White on Black"
