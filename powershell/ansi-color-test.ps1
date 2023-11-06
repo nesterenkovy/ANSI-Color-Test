@@ -2,39 +2,76 @@
 Clear-Host
 
 # Table fields separator
+$tableHead = "ANSI"
 $separator = " "
-$cellText = " myTest "
+$cellText = "myTest"
 
-# Specify cell length
-$cellLength = 8
+# Array of color names and PS-values
+$listColors = @(
+    @{ Name = "Black"; Color = "Black" },
+    @{ Name = "Red"; Color = "DarkRed" },
+    @{ Name = "Green"; Color = "DarkGreen" },
+    @{ Name = "Yellow"; Color = "DarkYellow" },
+    @{ Name = "Blue"; Color = "DarkBlue" },
+    @{ Name = "Purple"; Color = "DarkMagenta" },
+    @{ Name = "Cyan"; Color = "DarkCyan" },
+    @{ Name = "Gray"; Color = "Gray" },
+    @{ Name = "D_Gray"; Color = "DarkGray" },
+    @{ Name = "L_Red"; Color = "Red" },
+    @{ Name = "L_Green"; Color = "Green" },
+    @{ Name = "L_Yellow"; Color = "Yellow" },
+    @{ Name = "L_Blue"; Color = "Blue" },
+    @{ Name = "L_Purple"; Color = "Magenta" },
+    @{ Name = "L_Cyan"; Color = "Cyan" },
+    @{ Name = "White"; Color = "White" },
+    @{ Name = "Default"; Color = "none" }
+)
 
-# Get ANSI colors 
-$listColors = [enum]::GetValues([System.ConsoleColor])
+# Calculate maximum length of color name
+$cellLength = ($listColors.Name | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
 
 # Move to new line
 Write-Host ""
 
-# Background color name string
+# Create and display an empty row headers field
+$emptyField = $tableHead.PadLeft(($cellLength + $bgColor.Name.Length) / 2).PadRight($cellLength)
+Write-Host $emptyField -NoNewline
+# Display color names with the same width
 foreach ($bgColor in $listColors) {
-    $colorName = $bgColor.ToString().Replace("Dark", "D_").Replace("Magenta", "Purple")
     # Right-filled formatting
-    # $formattedHead = $colorName.PadRight($cellLength)
+    # $formattedHead = $bgColor.Name.PadRight($cellLength)
     # Left-filled formatting
-    # $formattedHead = $colorName.PadLeft($cellLength)
+    # $formattedHead = $bgColor.Name.PadLeft($cellLength)
     # Centering formatting
-    $formattedHead = $colorName.PadLeft(($cellLength + $colorName.Length) / 2).PadRight($cellLength)
-    Write-Host -NoNewline "$separator$formattedHead"
+    $formattedHead = $bgColor.Name.PadLeft(($cellLength + $bgColor.Name.Length) / 2).PadRight($cellLength)
+    Write-Host "$separator" -NoNewline
+    Write-Host "$formattedHead" -NoNewline
 }
 
-# Move to new line
 Write-Host ""
-
-
 # Cycle to display a table of text and background combinations
-Foreach ($FGcolor in $listColors) {
-    Foreach ($BGcolor in $listColors) {
+foreach ($foreground in $listColors) {
+    # Row header - name of the foreground color
+    $formattedHead = $foreground.Name.PadLeft($cellLength)
+    Write-Host -NoNewline "$formattedHead"
+    # Generate and output strings
+    foreach ($background in $listColors) {
+        $formattedCell = $cellText.PadLeft(($cellLength + $cellText.Length) / 2).PadRight($cellLength)
         Write-Host -NoNewline "$separator"
-        Write-Host -NoNewline "$cellText" -ForegroundColor $FGcolor -BackgroundColor $BGcolor
+        # Check for "none" and set the color parameters
+        if ($foreground.Color -ne "none" -and $background.Color -ne "none") {
+            Write-Host $formattedCell -NoNewline -ForegroundColor $foreground.Color -BackgroundColor $background.Color
+        }
+        elseif ($foreground.Color -ne "none") {
+            Write-Host $formattedCell -NoNewline -ForegroundColor $foreground.Color
+        }
+        elseif ($background.Color -ne "none") {
+            Write-Host $formattedCell -NoNewline -BackgroundColor $background.Color
+        }
+        else {
+            Write-Host $formattedCell -NoNewline
+        }
     }
     Write-Host ""
 }
+Write-Host ""
