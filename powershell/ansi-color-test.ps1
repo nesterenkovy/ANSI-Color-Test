@@ -1,4 +1,4 @@
-# Function for outputting color table
+# Function for show color table
 function Show-ColorTable {
     param (
         [array] $listColors
@@ -29,18 +29,29 @@ function Show-ColorTable {
         Write-Host -NoNewline "$separator$formattedHead"
     }
     Write-Host ""
-    # Cycle to display a table of text and background combinations
+    
+    # Cycle to show a table of text and background combinations
     foreach ($foreground in $listColors) {
         # Row header - name of the foreground color
         $formattedHead = $foreground.Name.PadLeft($cellLength)
         Write-Host -NoNewline "$formattedHead"
-        # Generate and output strings
+        # Generate and show strings
         foreach ($background in $listColors) {
             $formattedCell = $cellText.PadLeft(($cellLength + $cellText.Length) / 2).PadRight($cellLength)
             Write-Host -NoNewline "$separator"
             # Check for "none" and set the color parameters
-            if ($foreground.Color -ne "none" -and $background.Color -ne "none") {
+            if (($foreground.Color -ne "none" -and $foreground.Color -ne "Reverse") -and
+                ($background.Color -ne "none" -and $background.Color -ne "Reverse")) {
                 Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$($PSStyle.Foreground.($foreground.Color))$formattedCell"
+            }
+            elseif ($foreground.Color -eq "Reverse" -and $background.Color -eq "Reverse") {
+                Write-Host -NoNewline "$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
+            }
+            elseif ($foreground.Color -eq "Reverse") {
+                Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
+            }
+            elseif ($background.Color -eq "Reverse") {
+                Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
             }
             elseif ($foreground.Color -ne "none") {
                 Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$formattedCell"
@@ -60,7 +71,7 @@ function Show-ColorTable {
 # Screen cleaning
 Clear-Host
 
-# Array of color names and PS-values
+# Array of color names and values of $PSStyle
 $listColors = @(
     @{ Name = "Default"; Color = "none" },
     @{ Name = "Black"; Color = "Black" },
@@ -79,13 +90,13 @@ $listColors = @(
     @{ Name = "L_Purple"; Color = "BrightMagenta" },
     @{ Name = "L_Cyan"; Color = "BrightCyan" },
     @{ Name = "L_White"; Color = "BrightWhite" },
-    @{ Name = "Default"; Color = "none" }
+    @{ Name = "Reverse"; Color = "Reverse" }
 )
 
-# Call the function to write a color table
+# Calling a function to show the color table
 Show-ColorTable $listColors
 
-# Array of color names and PS-values
+# Array of color names and values of $PSStyle
 $listColors = @(
     @{ Name = "Default"; Color = "none" },
     @{ Name = "Black"; Color = "Black" },
@@ -104,8 +115,8 @@ $listColors = @(
     @{ Name = "L_Cyan"; Color = "BrightCyan" },
     @{ Name = "White"; Color = "White" },
     @{ Name = "L_White"; Color = "BrightWhite" },
-    @{ Name = "Default"; Color = "none" }
+    @{ Name = "Reverse"; Color = "Reverse" }
 )
 
-# Call the function to write a color table
+# Calling a function to show the color table
 Show-ColorTable $listColors
