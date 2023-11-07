@@ -1,4 +1,4 @@
-# Function for show color table
+# Function for outputting color table
 function Show-ColorTable {
     param (
         [array] $listColors
@@ -40,13 +40,13 @@ function Show-ColorTable {
             Write-Host -NoNewline "$separator"
             # Check for "none" and set the color parameters
             if ($foreground.Color -ne "none" -and $background.Color -ne "none") {
-                Write-Host -NoNewline "$formattedCell" -ForegroundColor $foreground.Color -BackgroundColor $background.Color
+                Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$($PSStyle.Foreground.($foreground.Color))$formattedCell"
             }
             elseif ($foreground.Color -ne "none") {
-                Write-Host -NoNewline "$formattedCell" -ForegroundColor $foreground.Color
+                Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$formattedCell"
             }
             elseif ($background.Color -ne "none") {
-                Write-Host -NoNewline "$formattedCell" -BackgroundColor $background.Color
+                Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$formattedCell"
             }
             else {
                 Write-Host -NoNewline "$formattedCell"
@@ -64,21 +64,21 @@ Clear-Host
 $listColors = @(
     @{ Name = "Default"; Color = "none" },
     @{ Name = "Black"; Color = "Black" },
-    @{ Name = "Red"; Color = "DarkRed" },
-    @{ Name = "Green"; Color = "DarkGreen" },
-    @{ Name = "Yellow"; Color = "DarkYellow" },
-    @{ Name = "Blue"; Color = "DarkBlue" },
-    @{ Name = "Purple"; Color = "DarkMagenta" },
-    @{ Name = "Cyan"; Color = "DarkCyan" },
-    @{ Name = "White"; Color = "Gray" },
-    @{ Name = "L_Black"; Color = "DarkGray" },
-    @{ Name = "L_Red"; Color = "Red" },
-    @{ Name = "L_Green"; Color = "Green" },
-    @{ Name = "L_Yellow"; Color = "Yellow" },
-    @{ Name = "L_Blue"; Color = "Blue" },
-    @{ Name = "L_Purple"; Color = "Magenta" },
-    @{ Name = "L_Cyan"; Color = "Cyan" },
-    @{ Name = "L_White"; Color = "White" },
+    @{ Name = "Red"; Color = "Red" },
+    @{ Name = "Green"; Color = "Green" },
+    @{ Name = "Yellow"; Color = "Yellow" },
+    @{ Name = "Blue"; Color = "Blue" },
+    @{ Name = "Purple"; Color = "Magenta" },
+    @{ Name = "Cyan"; Color = "Cyan" },
+    @{ Name = "White"; Color = "White" },
+    @{ Name = "L_Black"; Color = "BrightBlack" },
+    @{ Name = "L_Red"; Color = "BrightRed" },
+    @{ Name = "L_Green"; Color = "BrightGreen" },
+    @{ Name = "L_Yellow"; Color = "BrightYellow" },
+    @{ Name = "L_Blue"; Color = "BrightBlue" },
+    @{ Name = "L_Purple"; Color = "BrightMagenta" },
+    @{ Name = "L_Cyan"; Color = "BrightCyan" },
+    @{ Name = "L_White"; Color = "BrightWhite" },
     @{ Name = "Default"; Color = "none" }
 )
 
@@ -89,21 +89,21 @@ Show-ColorTable $listColors
 $listColors = @(
     @{ Name = "Default"; Color = "none" },
     @{ Name = "Black"; Color = "Black" },
-    @{ Name = "L_Black"; Color = "DarkGray" },
-    @{ Name = "Red"; Color = "DarkRed" },
-    @{ Name = "L_Red"; Color = "Red" },
-    @{ Name = "Green"; Color = "DarkGreen" },
-    @{ Name = "L_Green"; Color = "Green" },
-    @{ Name = "Yellow"; Color = "DarkYellow" },
-    @{ Name = "L_Yellow"; Color = "Yellow" },
-    @{ Name = "Blue"; Color = "DarkBlue" },
-    @{ Name = "L_Blue"; Color = "Blue" },
-    @{ Name = "Purple"; Color = "DarkMagenta" },
-    @{ Name = "L_Purple"; Color = "Magenta" },
-    @{ Name = "Cyan"; Color = "DarkCyan" },
-    @{ Name = "L_Cyan"; Color = "Cyan" },
-    @{ Name = "White"; Color = "Gray" },
-    @{ Name = "L_White"; Color = "White" },
+    @{ Name = "L_Black"; Color = "BrightBlack" },
+    @{ Name = "Red"; Color = "Red" },
+    @{ Name = "L_Red"; Color = "BrightRed" },
+    @{ Name = "Green"; Color = "Green" },
+    @{ Name = "L_Green"; Color = "BrightGreen" },
+    @{ Name = "Yellow"; Color = "Yellow" },
+    @{ Name = "L_Yellow"; Color = "BrightYellow" },
+    @{ Name = "Blue"; Color = "Blue" },
+    @{ Name = "L_Blue"; Color = "BrightBlue" },
+    @{ Name = "Purple"; Color = "Magenta" },
+    @{ Name = "L_Purple"; Color = "BrightMagenta" },
+    @{ Name = "Cyan"; Color = "Cyan" },
+    @{ Name = "L_Cyan"; Color = "BrightCyan" },
+    @{ Name = "White"; Color = "White" },
+    @{ Name = "L_White"; Color = "BrightWhite" },
     @{ Name = "Default"; Color = "none" }
 )
 
