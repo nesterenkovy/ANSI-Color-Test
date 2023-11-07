@@ -1,20 +1,52 @@
 #!/bin/bash
 
 # Array of ANSI colors for text and background
-name_colors=("Black" "Red" "Green" "Yellow" "Blue" "Purple" "Cyan" "Gray" "D_Gray" "L_Red" "L_Green" "L_Yellow" "L_Blue" "L_Purple" "L_Cyan" "White")
-fg_colors=("30" "31" "32" "33" "34" "35" "36" "37" "90" "91" "92" "93" "94" "95" "96" "97")
-bg_colors=("40" "41" "42" "43" "44" "45" "46" "47" "100" "101" "102" "103" "104" "105" "106" "107")
+colors=(
+    "Default :\033[m:"
+    "Black   :\033[30m:\033[40m"
+    "D_Gray  :\033[90m:\033[100m"
+    "Red     :\033[31m:\033[41m"
+    "L_Red   :\033[91m:\033[101m"
+    "Green   :\033[32m:\033[42m"
+    "L_Green :\033[92m:\033[102m"
+    "Yellow  :\033[33m:\033[43m"
+    "L_Yellow:\033[93m:\033[103m"
+    "Blue    :\033[34m:\033[44m"
+    "L_Blue  :\033[94m:\033[104m"
+    "Purple  :\033[35m:\033[45m"
+    "L_Purple:\033[95m:\033[105m"
+    "Cyan    :\033[36m:\033[46m"
+    "L_Cyan  :\033[96m:\033[106m"
+    "Gray    :\033[37m:\033[47m"
+    "White   :\033[97m:\033[107m"
+    "Default :\033[m:"
+)
+
 # Table fields separator
-text=" myTest"
+text="myTest"
 
 # Screen cleaning
 clear
 
-# Cycle to display a table of text and background combinations
-for fg_color in "${fg_colors[@]}"; do
-    echo -en "${name_color[@]}"
-    for bg_color in "${bg_colors[@]}"; do
-        echo -en " \e[${fg_color};${bg_color}m${text} \e[0m"
-    done
-    echo # Move to new line
+# Move to new line
+echo ""
+
+# Display an empty field in the background color names line
+echo -n "         "
+# Display color names with the same width
+for color in "${colors[@]}"; do
+    echo -n "${color%%:*} "
 done
+echo ""
+
+# Cycle to display a table of text and background combinations
+for fg_color in "${colors[@]}"; do
+    IFS=":" read -r name fg bgt <<< "$fg_color"
+    echo -en "$name"
+    for bg_color in "${colors[@]}"; do
+        IFS=":" read -r nt fgt bg <<< "$bg_color"
+        echo -en " $fg$bg $text \033[0m"
+    done
+    echo ""
+done
+echo ""
