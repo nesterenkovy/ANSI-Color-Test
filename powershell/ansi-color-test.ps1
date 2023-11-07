@@ -1,5 +1,5 @@
-# Function for outputting color table
-function Write-ColorTable {
+# Function for show color table
+function Show-ColorTable {
     param (
         [array] $listColors
     )
@@ -83,7 +83,7 @@ $listColors = @(
 )
 
 # Call the function to write a color table
-Write-ColorTable $listColors
+Show-ColorTable $listColors
 
 # Array of color names and PS-values
 $listColors = @(
@@ -108,4 +108,4 @@ $listColors = @(
 )
 
 # Call the function to write a color table
-Write-ColorTable $listColors
+Show-ColorTable $listColors
