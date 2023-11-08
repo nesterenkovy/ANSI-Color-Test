@@ -1,23 +1,27 @@
-# Function for show color table
+# Function to get color table
 function Show-ColorTable {
     param (
         [array] $listColors
     )
 
-    # Table fields separator
-    $tableHead = "ANSI"
-    $separator = " "
-    $cellText = "myTest"
+    # Table title, fields and offset
+    $text = "myTest"
+    $title = "ANSI-16"
+    $offset = " "
+    
+    # The ANSI escape sequences
+    $ansiReset = $PSStyle.Reset
+    $ansiReverse = $PSStyle.Reverse
 
-    # Calculate maximum length of color name
+    # Calculate the maximum length of color name
     $cellLength = ($listColors.Name | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
 
-    # Move to new line
-    Write-Host ""
+    # Formatting title and offset to center
+    $titleField = $ansiReverse + $title.PadRight($cellLength) + $ansiReset
+    $text = $text.PadLeft(($cellLength + $text.Length) / 2).PadRight($cellLength)
 
-    # Create and display an empty row headers field
-    $emptyField = $tableHead.PadLeft(($cellLength + $tableHead.Length) / 2).PadRight($cellLength)
-    Write-Host -NoNewline "$emptyField"
+    # Show the title of the table in the first line
+    Write-Host -NoNewline "`n$titleField"
     # Display color names with the same width
     foreach ($bgColor in $listColors) {
         # Right-filled formatting
@@ -26,7 +30,7 @@ function Show-ColorTable {
         # $formattedHead = $bgColor.Name.PadLeft($cellLength)
         # Centering formatting
         # $formattedHead = $bgColor.Name.PadLeft(($cellLength + $bgColor.Name.Length) / 2).PadRight($cellLength)
-        Write-Host -NoNewline "$separator$formattedHead"
+        Write-Host -NoNewline "$offset$formattedHead"
     }
     Write-Host ""
     
@@ -36,12 +40,12 @@ function Show-ColorTable {
         $formattedHead = $foreground.Name.PadLeft($cellLength)
         Write-Host -NoNewline "$formattedHead"
         # Generate and show strings
+        $formattedCell = $text.PadLeft(($cellLength + $text.Length) / 2).PadRight($cellLength)
         foreach ($background in $listColors) {
-            $formattedCell = $cellText.PadLeft(($cellLength + $cellText.Length) / 2).PadRight($cellLength)
-            Write-Host -NoNewline "$separator"
-            # Check for "none" and set the color parameters
-            if (($foreground.Color -ne "none" -and $foreground.Color -ne "Reverse") -and
-                ($background.Color -ne "none" -and $background.Color -ne "Reverse")) {
+            Write-Host -NoNewline "$offset"
+            # Check for "Default" and set the color parameters
+            if (($foreground.Color -ne "Default" -and $foreground.Color -ne "Reverse") -and
+                ($background.Color -ne "Default" -and $background.Color -ne "Reverse")) {
                 Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$($PSStyle.Foreground.($foreground.Color))$formattedCell"
             }
             elseif ($foreground.Color -eq "Reverse" -and $background.Color -eq "Reverse") {
@@ -53,10 +57,10 @@ function Show-ColorTable {
             elseif ($background.Color -eq "Reverse") {
                 Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
             }
-            elseif ($foreground.Color -ne "none") {
+            elseif ($foreground.Color -ne "Default") {
                 Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$formattedCell"
             }
-            elseif ($background.Color -ne "none") {
+            elseif ($background.Color -ne "Default") {
                 Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$formattedCell"
             }
             else {
@@ -73,7 +77,7 @@ Clear-Host
 
 # Array of color names and values of $PSStyle
 $listColors = @(
-    @{ Name = "Default"; Color = "none" },
+    @{ Name = "Default"; Color = "Default" },
     @{ Name = "Black"; Color = "Black" },
     @{ Name = "Red"; Color = "Red" },
     @{ Name = "Green"; Color = "Green" },
@@ -98,7 +102,7 @@ Show-ColorTable $listColors
 
 # Array of color names and values of $PSStyle
 $listColors = @(
-    @{ Name = "Default"; Color = "none" },
+    @{ Name = "Default"; Color = "Default" },
     @{ Name = "Black"; Color = "Black" },
     @{ Name = "L_Black"; Color = "BrightBlack" },
     @{ Name = "Red"; Color = "Red" },
