@@ -1,8 +1,45 @@
-# Function to get color table
+# Function to get color palette from a color list
+function Get-ColorPalette {
+    [CmdletBinding()]
+    param (
+        [Parameter(ValueFromPipeline = $true)]
+        [array] $colorList
+    )
+
+    process {
+        $colorPalette = @()
+        foreach ($color in $colorList) {
+            switch ($color) {
+                "Default" {
+                    $ansiFG = ""
+                    $ansiBG = ""
+                }
+                "Reverse" {
+                    $ansiFG = $PSStyle.Reverse
+                    $ansiBG = $ansiFG 
+                }
+                default {
+                    $ansiFG = $PSStyle.Foreground.($color)
+                    $ansiBG = $PSStyle.Background.($color) 
+                }
+            }
+            $colorEntry = @{
+                Name   = $color.Replace("Bright", "L_").Replace("Magenta", "Purple")
+                Color  = $color
+                ansiFG = $ansiFG
+                ansiBG = $ansiBG
+            }
+            $colorPalette += $colorEntry
+        }
+        $colorPalette
+    }
+}
+# Function to get color table from color palette
 function Get-ColorTable {
     [CmdletBinding(SupportsShouldProcess = $false)]
     param (
-        [array] $listColors
+        [Parameter(ValueFromPipeline = $true)]
+        [array] $colorPalette
     )
 
     process {
@@ -16,42 +53,29 @@ function Get-ColorTable {
         $ansiReverse = $PSStyle.Reverse
 
         # Calculate the maximum length of color name
-        $cellLength = ($listColors.Name | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
+        $cellLength = ($colorPalette.Name | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
 
-        # Formatting title and offset to center
-        $title = $ansiReverse + $title.PadRight($cellLength) + $ansiReset
+        # Formatting text fot cell
         $text = $text.PadLeft(($cellLength + $text.Length) / 2).PadRight($cellLength)
 
         # Get the title of the table in the first line
-        $colorTable = "`n" + $title
+        $colorTable = "`n" + $ansiReverse + $title.PadRight($cellLength) + $ansiReset
         # Get first line - names of background colors
-        foreach ($columnColor in $listColors) {
-            # Right-filled formatting
+        foreach ($columnColor in $colorPalette) {
+            # Formatting color names to the left
             $colorTable += $offset + $columnColor.Name.PadRight($cellLength)
         }
         
         # Table rows generation cycles
-        foreach ($fgColors in $listColors) {
+        foreach ($fgColor in $colorPalette) {
             $colorTable += "`n"
             # Row header - name of the foreground color
-            $colorTable += $fgColors.Name.PadRight($cellLength)
-            $fgColor = $fgColors.Color
-
-            # Generate strings
-            switch ($fgColor) {
-                "Default" { $ansiFG = "" }
-                "Reverse" { $ansiFG = $ansiReverse }
-                default { $ansiFG = $PSStyle.Foreground.($fgColor) }
-            }
+            $colorTable += $fgColor.Name.PadRight($cellLength)
+            $ansiFG = $fgColor.ansiFG
 
             # Cycle of generating cells in a row
-            foreach ($bgColors in $listColors) {
-                $bgColor = $bgColors.Color
-                switch ($bgColor) {
-                    "Default" { $ansiBG = "" }
-                    "Reverse" { $ansiBG = $ansiReverse }
-                    default { $ansiBG = $PSStyle.Background.($bgColor) }
-                }            
+            foreach ($bgColors in $colorPalette) {
+                $ansiBG = $bgColors.ansiBG
                 $colorTable += $offset + $ansiFG + $ansiBG + $text + $ansiReset
             }
         }
@@ -68,58 +92,24 @@ $windowWidth = $host.UI.RawUI.WindowSize.Width
 $windowHeight = $host.UI.RawUI.WindowSize.Height
 Write-Host "WindowSize: $windowWidth x $windowHeight"
 
-# Array of color names and values of $PSStyle
-$listColors = @(
-    @{ Name = "Default"; Color = "Default" },
-    @{ Name = "Black"; Color = "Black" },
-    @{ Name = "Red"; Color = "Red" },
-    @{ Name = "Green"; Color = "Green" },
-    @{ Name = "Yellow"; Color = "Yellow" },
-    @{ Name = "Blue"; Color = "Blue" },
-    @{ Name = "Purple"; Color = "Magenta" },
-    @{ Name = "Cyan"; Color = "Cyan" },
-    @{ Name = "White"; Color = "White" },
-    @{ Name = "L_Black"; Color = "BrightBlack" },
-    @{ Name = "L_Red"; Color = "BrightRed" },
-    @{ Name = "L_Green"; Color = "BrightGreen" },
-    @{ Name = "L_Yellow"; Color = "BrightYellow" },
-    @{ Name = "L_Blue"; Color = "BrightBlue" },
-    @{ Name = "L_Purple"; Color = "BrightMagenta" },
-    @{ Name = "L_Cyan"; Color = "BrightCyan" },
-    @{ Name = "L_White"; Color = "BrightWhite" },
-    @{ Name = "Reverse"; Color = "Reverse" }
-)
+# List of colors for 1st palette
+$colorList1 = @("Default", "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White", "BrightBlack", "BrightRed", "BrightGreen", "BrightYellow", "BrightBlue", "BrightMagenta", "BrightCyan", "BrightWhite", "Reverse")
 
-# Calling a function to show the color table
-$colorTable = Get-ColorTable $listColors
+# List of colors for 2nd palette
+$colorList2 = @("Default", "Black", "BrightBlack", "Red", "BrightRed", "Green", "BrightGreen", "Yellow", "BrightYellow", "Blue", "BrightBlue", "Magenta", "BrightMagenta", "Cyan", "BrightCyan", "White", "BrightWhite", "Reverse")
 
-# Display the color table
-Write-Host "$colorTable"
+# Get a palette from the list of colors
+$colorPalette1 = Get-ColorPalette -colorList $colorList1
+$colorPalette2 = Get-ColorPalette -colorList $colorList2
+# $colorPalette1 = $colorList1 | Get-ColorPalette
+# $colorPalette2 = $colorList2 | Get-ColorPalette
 
-# Array of color names and values of $PSStyle
-$listColors = @(
-    @{ Name = "Default"; Color = "Default" },
-    @{ Name = "Black"; Color = "Black" },
-    @{ Name = "L_Black"; Color = "BrightBlack" },
-    @{ Name = "Red"; Color = "Red" },
-    @{ Name = "L_Red"; Color = "BrightRed" },
-    @{ Name = "Green"; Color = "Green" },
-    @{ Name = "L_Green"; Color = "BrightGreen" },
-    @{ Name = "Yellow"; Color = "Yellow" },
-    @{ Name = "L_Yellow"; Color = "BrightYellow" },
-    @{ Name = "Blue"; Color = "Blue" },
-    @{ Name = "L_Blue"; Color = "BrightBlue" },
-    @{ Name = "Purple"; Color = "Magenta" },
-    @{ Name = "L_Purple"; Color = "BrightMagenta" },
-    @{ Name = "Cyan"; Color = "Cyan" },
-    @{ Name = "L_Cyan"; Color = "BrightCyan" },
-    @{ Name = "White"; Color = "White" },
-    @{ Name = "L_White"; Color = "BrightWhite" },
-    @{ Name = "Reverse"; Color = "Reverse" }
-)
+# Get a color table from the palette
+$colorTable1 = Get-ColorTable -colorPalette $colorPalette1
+$colorTable2 = Get-ColorTable -colorPalette $colorPalette2
+# $colorTable1 = $colorPalette1 | Get-ColorTable
+# $colorTable2 = $colorPalette2 | Get-ColorTable
 
-# Calling a function to show the color table
-$colorTable = Get-ColorTable $listColors
+Write-Host $colorTable1 "`n"
+Write-Host $colorTable2 "`n"
 
-# Display the color table
-Write-Host "$colorTable"
