@@ -37,7 +37,7 @@ function Get-ColorPalette {
 
 # Function to get color table from color palette
 function Get-ColorTable {
-    [CmdletBinding(SupportsShouldProcess = $false)]
+    [CmdletBinding(ValueFromPipeline = $true)]
     param (
         [Parameter(ValueFromPipeline = $true)]
         [array] $colorPalette
@@ -85,7 +85,6 @@ function Get-ColorTable {
     }
 }
 
-
 # Calculate table size
 function Get-TableSize {
     [CmdletBinding()]
@@ -130,21 +129,15 @@ $colorPalette2 = Get-ColorPalette -colorList $colorList2
 # $colorPalette2 = $colorList2 | Get-ColorPalette
 
 # Get a color table from the palette
-$colorTable1 = Get-ColorTable -colorPalette $colorPalette1
-$colorTable2 = Get-ColorTable -colorPalette $colorPalette2
-# $colorTable1 = $colorPalette1 | Get-ColorTable
-# $colorTable2 = $colorPalette2 | Get-ColorTable
+# $colorTable1 = Get-ColorTable -colorPalette $colorPalette1
+# $colorTable2 = Get-ColorTable -colorPalette $colorPalette2
+$colorTable1 = $colorPalette1 | Get-ColorTable
+$colorTable2 = $colorPalette2 | Get-ColorTable
 
 # Get table sizes
 $tableSize1 = Get-TableSize -tableText $colorTable1
 $tableSize2 = Get-TableSize -tableText $colorTable2
 
 # Show color tables and their sizes
-Write-Host $colorTable1
-$tableWidth = $tableSize1.Width
-$tableHeight = $tableSize1.Height
-Write-Host "TableSize:  $tableWidth x $tableHeight"
-Write-Host $colorTable2
-$tableWidth = $tableSize2.Width
-$tableHeight = $tableSize2.Height
-Write-Host "TableSize:  $tableWidth x $tableHeight`n"
+Write-Output $colorTable1, "TableSize: $($tableSize1.Width) x $($tableSize1.Height)"
+Write-Output $colorTable2, "TableSize: $($tableSize2.Width) x $($tableSize2.Height)"
