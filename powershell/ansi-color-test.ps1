@@ -7,9 +7,9 @@ function Get-ColorPalette {
     )
 
     process {
-        $colorPalette = @()
-        foreach ($color in $colorList) {
-            switch ($color) {
+        $colorPalette = [System.Collections.ArrayList]@()
+        $colorList | ForEach-Object {
+            switch ($_) {
                 "Default" {
                     $ansiFG = ""
                     $ansiBG = ""
@@ -19,21 +19,22 @@ function Get-ColorPalette {
                     $ansiBG = $ansiFG 
                 }
                 default {
-                    $ansiFG = $PSStyle.Foreground.($color)
-                    $ansiBG = $PSStyle.Background.($color) 
+                    $ansiFG = $PSStyle.Foreground.$_
+                    $ansiBG = $PSStyle.Background.$_ 
                 }
             }
-            $colorEntry = @{
-                Name   = $color.Replace("Bright", "L_").Replace("Magenta", "Purple")
-                Color  = $color
+            $colorEntry = [PSCustomObject]@{
+                Name   = $_.Replace("Bright", "L_").Replace("Magenta", "Purple")
+                Color  = $_
                 ansiFG = $ansiFG
                 ansiBG = $ansiBG
             }
-            $colorPalette += $colorEntry
+            [void]$colorPalette.Add($colorEntry)
         }
         $colorPalette
     }
 }
+
 # Function to get color table from color palette
 function Get-ColorTable {
     [CmdletBinding(SupportsShouldProcess = $false)]
