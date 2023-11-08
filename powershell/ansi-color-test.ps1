@@ -1,5 +1,5 @@
 # Function to get color table
-function Show-ColorTable {
+function Get-ColorTable {
     param (
         [array] $listColors
     )
@@ -8,7 +8,7 @@ function Show-ColorTable {
     $text = "myTest"
     $title = "ANSI-16"
     $offset = " "
-    
+
     # The ANSI escape sequences
     $ansiReset = $PSStyle.Reset
     $ansiReverse = $PSStyle.Reverse
@@ -17,59 +17,46 @@ function Show-ColorTable {
     $cellLength = ($listColors.Name | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
 
     # Formatting title and offset to center
-    $titleField = $ansiReverse + $title.PadRight($cellLength) + $ansiReset
+    $title = $ansiReverse + $title.PadRight($cellLength) + $ansiReset
     $text = $text.PadLeft(($cellLength + $text.Length) / 2).PadRight($cellLength)
 
-    # Show the title of the table in the first line
-    Write-Host -NoNewline "`n$titleField"
-    # Display color names with the same width
-    foreach ($bgColor in $listColors) {
+    # Get the title of the table in the first line
+    $colorTable = "`n" + $title
+    # Get first line - names of background colors
+    foreach ($columnColor in $listColors) {
         # Right-filled formatting
-        $formattedHead = $bgColor.Name.PadRight($cellLength)
-        # Left-filled formatting
-        # $formattedHead = $bgColor.Name.PadLeft($cellLength)
-        # Centering formatting
-        # $formattedHead = $bgColor.Name.PadLeft(($cellLength + $bgColor.Name.Length) / 2).PadRight($cellLength)
-        Write-Host -NoNewline "$offset$formattedHead"
+        $colorTable += $offset + $columnColor.Name.PadRight($cellLength)
     }
-    Write-Host ""
+    $colorTable += "`n"
     
-    # Cycle to show a table of text and background combinations
-    foreach ($foreground in $listColors) {
+    # Table rows generation cycles
+    foreach ($fgColors in $listColors) {
         # Row header - name of the foreground color
-        $formattedHead = $foreground.Name.PadLeft($cellLength)
-        Write-Host -NoNewline "$formattedHead"
-        # Generate and show strings
-        $formattedCell = $text.PadLeft(($cellLength + $text.Length) / 2).PadRight($cellLength)
-        foreach ($background in $listColors) {
-            Write-Host -NoNewline "$offset"
-            # Check for "Default" and set the color parameters
-            if (($foreground.Color -ne "Default" -and $foreground.Color -ne "Reverse") -and
-                ($background.Color -ne "Default" -and $background.Color -ne "Reverse")) {
-                Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$($PSStyle.Foreground.($foreground.Color))$formattedCell"
-            }
-            elseif ($foreground.Color -eq "Reverse" -and $background.Color -eq "Reverse") {
-                Write-Host -NoNewline "$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
-            }
-            elseif ($foreground.Color -eq "Reverse") {
-                Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
-            }
-            elseif ($background.Color -eq "Reverse") {
-                Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$($PSStyle.Reverse)$formattedCell$($PSStyle.ReverseOff)"
-            }
-            elseif ($foreground.Color -ne "Default") {
-                Write-Host -NoNewline "$($PSStyle.Foreground.($foreground.Color))$formattedCell"
-            }
-            elseif ($background.Color -ne "Default") {
-                Write-Host -NoNewline "$($PSStyle.Background.($background.Color))$formattedCell"
-            }
-            else {
-                Write-Host -NoNewline "$formattedCell"
-            }
+        $colorTable += $fgColors.Name.PadRight($cellLength)
+        $fgColor = $fgColors.Color
+
+        # Generate strings
+        switch ($fgColor) {
+            "Default" { $ansiFG = "" }
+            "Reverse" { $ansiFG = $ansiReverse }
+            default { $ansiFG = $PSStyle.Foreground.($fgColor) }
         }
-        Write-Host ""
+
+        # Cycle of generating cells in a row
+        foreach ($bgColors in $listColors) {
+            $bgColor = $bgColors.Color
+            switch ($bgColor) {
+                "Default" { $ansiBG = "" }
+                "Reverse" { $ansiBG = $ansiReverse }
+                default { $ansiBG = $PSStyle.Background.($bgColor) }
+            }            
+            $colorTable += $offset + $ansiFG + $ansiBG + $text + $ansiReset
+        }
+        # End line
+        $colorTable += "`n"
     }
-    Write-Host ""
+    # Return the resulting color table
+    $colorTable
 }
 
 # Screen cleaning
@@ -98,7 +85,10 @@ $listColors = @(
 )
 
 # Calling a function to show the color table
-Show-ColorTable $listColors
+$colorTable = Get-ColorTable $listColors
+
+# Display the color table
+Write-Host "$colorTable"
 
 # Array of color names and values of $PSStyle
 $listColors = @(
@@ -123,4 +113,7 @@ $listColors = @(
 )
 
 # Calling a function to show the color table
-Show-ColorTable $listColors
+$colorTable = Get-ColorTable $listColors
+
+# Display the color table
+Write-Host "$colorTable"
