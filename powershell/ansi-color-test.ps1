@@ -124,27 +124,19 @@ $colorList1 = @("Default", "Black", "Red", "Green", "Yellow", "Blue", "Magenta",
 $colorList2 = @("Default", "Black", "BrightBlack", "Red", "BrightRed", "Green", "BrightGreen", "Yellow", "BrightYellow", "Blue", "BrightBlue", "Magenta", "BrightMagenta", "Cyan", "BrightCyan", "White", "BrightWhite", "Reverse")
 
 # Get a palette from the list of colors
-$colorPalette1 = Get-ColorPalette -colorList $colorList1
-$colorPalette2 = Get-ColorPalette -colorList $colorList2
-# $colorPalette1 = $colorList1 | Get-ColorPalette
-# $colorPalette2 = $colorList2 | Get-ColorPalette
+# $colorPalette1 = Get-ColorPalette -colorList $colorList1
+# $colorPalette2 = Get-ColorPalette -colorList $colorList2
+$colorPalette1 = $colorList1 | Get-ColorPalette
+$colorPalette2 = $colorList2 | Get-ColorPalette
 
 # Get a color table from the palette
 $colorTable1 = Get-ColorTable -colorPalette $colorPalette1
 $colorTable2 = Get-ColorTable -colorPalette $colorPalette2
-# $colorTable1 = $colorPalette1 | Get-ColorTable
-# $colorTable2 = $colorPalette2 | Get-ColorTable
 
 # Get table sizes
 $tableSize1 = Get-TableSize -tableText $colorTable1
 $tableSize2 = Get-TableSize -tableText $colorTable2
 
 # Show color tables and their sizes
-Write-Host $colorTable1
-$tableWidth = $tableSize1.Width
-$tableHeight = $tableSize1.Height
-Write-Host "TableSize:  $tableWidth x $tableHeight"
-Write-Host $colorTable2
-$tableWidth = $tableSize2.Width
-$tableHeight = $tableSize2.Height
-Write-Host "TableSize:  $tableWidth x $tableHeight`n"
+Write-Output $colorTable1, "TableSize: $($tableSize1.Width) x $($tableSize1.Height)"
+Write-Output $colorTable2, "TableSize: $($tableSize2.Width) x $($tableSize2.Height)"
