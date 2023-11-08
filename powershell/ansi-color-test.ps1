@@ -84,6 +84,30 @@ function Get-ColorTable {
     }
 }
 
+# Calculate table size
+function Get-TableSize {
+    [CmdletBinding()]
+    param (
+        [Parameter(ValueFromPipeline)]
+        [string] $tableText
+    )
+
+    process {
+        # Remove ANSI control codes
+        $cleanedTable = $tableText -replace '\e\[\d+(;\d+)?m', ''
+
+        # Split into lines and measure maximum length
+        $lineLengths = $cleanedTable -split "`n" | ForEach-Object { $_.Length }
+
+        # Calculation of maximum width and height
+        $tableSize = $lineLengths | Measure-Object -Maximum | Select-Object @{Name = "Width"; Expression = { [int]$_.Maximum } }, 
+        @{Name = "Height"; Expression = { [int]$_.Count } }
+
+        $tableSize
+    }
+}
+
+
 # Screen cleaning
 Clear-Host
 
@@ -110,6 +134,16 @@ $colorTable2 = Get-ColorTable -colorPalette $colorPalette2
 # $colorTable1 = $colorPalette1 | Get-ColorTable
 # $colorTable2 = $colorPalette2 | Get-ColorTable
 
-Write-Host $colorTable1 "`n"
-Write-Host $colorTable2 "`n"
+# Get table sizes
+$tableSize1 = Get-TableSize -tableText $colorTable1
+$tableSize2 = Get-TableSize -tableText $colorTable2
 
+# Show color tables and their sizes
+Write-Host $colorTable1
+$tableWidth = $tableSize1.Width
+$tableHeight = $tableSize1.Height
+Write-Host "TableSize:  $tableWidth x $tableHeight"
+Write-Host $colorTable2
+$tableWidth = $tableSize2.Width
+$tableHeight = $tableSize2.Height
+Write-Host "TableSize:  $tableWidth x $tableHeight`n"
