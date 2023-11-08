@@ -31,7 +31,7 @@ function Get-ColorPalette {
             }
             [void]$colorPalette.Add($colorEntry)
         }
-        $colorPalette
+        Write-Output $colorPalette
     }
 }
 
@@ -62,28 +62,29 @@ function Get-ColorTable {
         # Get the title of the table in the first line
         $colorTable = "`n" + $ansiReverse + $title.PadRight($cellLength) + $ansiReset
         # Get first line - names of background colors
-        foreach ($columnColor in $colorPalette) {
+        $colorPalette | ForEach-Object {
             # Formatting color names to the left
-            $colorTable += $offset + $columnColor.Name.PadRight($cellLength)
+            $colorTable += $offset + $_.Name.PadRight($cellLength)
         }
         
         # Table rows generation cycles
-        foreach ($fgColor in $colorPalette) {
+        $colorPalette | ForEach-Object {
             $colorTable += "`n"
             # Row header - name of the foreground color
-            $colorTable += $fgColor.Name.PadRight($cellLength)
-            $ansiFG = $fgColor.ansiFG
+            $colorTable += $_.Name.PadRight($cellLength)
+            $ansiFG = $_.ansiFG
 
             # Cycle of generating cells in a row
-            foreach ($bgColors in $colorPalette) {
-                $ansiBG = $bgColors.ansiBG
+            $colorPalette | ForEach-Object {
+                $ansiBG = $_.ansiBG
                 $colorTable += $offset + $ansiFG + $ansiBG + $text + $ansiReset
             }
         }
         # Return the resulting color table
-        $colorTable
+        Write-Output $colorTable
     }
 }
+
 
 # Calculate table size
 function Get-TableSize {
@@ -108,14 +109,13 @@ function Get-TableSize {
     }
 }
 
-
 # Screen cleaning
 Clear-Host
 
 # Get and display terminal window size
 $windowWidth = $host.UI.RawUI.WindowSize.Width
 $windowHeight = $host.UI.RawUI.WindowSize.Height
-Write-Host "WindowSize: $windowWidth x $windowHeight"
+Write-Output "WindowSize: $windowWidth x $windowHeight"
 
 # List of colors for 1st palette
 $colorList1 = @("Default", "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White", "BrightBlack", "BrightRed", "BrightGreen", "BrightYellow", "BrightBlue", "BrightMagenta", "BrightCyan", "BrightWhite", "Reverse")
